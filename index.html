@@ -7,7 +7,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Vincent Brand</title>
+<title>Besart Sulejmani CV 2025</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Besart Sulejmani">
 <meta name="keywords" content="Besart Sulejmani, Besart, Sulejmani, Senior, DevOps, Tech, Management">
@@ -106,7 +106,7 @@ h2{
 
 hr{
     /* padding:1rem 0 2rem 0; */
-    border-bottom:1px dashed #ccc;
+    border-bottom:1px dashed #666;
     border-top:none;
 }
 
@@ -127,12 +127,45 @@ article{
     display: flex;
 }
 
+a{
+    color:#333;
+}
+a:hover{
+    color:#000;
+}
 
   
 @media only screen and (max-width: 600px) {
-
+    hr{
+        margin:1rem 0;
+    }
+    h2{
+        font-weight: 400;
+        font-size: 0.9rem;
+    }
+    h3{
+        margin:0 0 2rem 0;
+    }
+    .company{
+        width:80px;
+        height:80px;
+        background:#ccc;
+        border-radius: 50%;
+        margin:0 0.3rem 0 0;
+        float:left;
+    }
+    .work-description{
+        margin:1rem 0 0 0;
+    }
+    article{
+        margin:0 0 2rem 0;
+    }
 }
 @media only screen and (min-width: 601px) {
+    h2{
+        font-weight: 400;
+        font-size: 1.3rem;   
+    }
     .work-description{
         margin: 1rem 0 5rem 80px;
     }
@@ -173,18 +206,27 @@ article{
 <body>
   <main class="container">
     <div class="row pt-3">
-        <div class="col-3 col-sm-3 col-md-3 text-center">
+        <div class="col-4 col-sm-4 col-md-3 text-center">
             <img class="img-fluid avatar" src="https://media.licdn.com/dms/image/v2/D4E03AQGoWbzXEJ2f9g/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1731488613037?e=1736985600&v=beta&t=BIbBH6sRZZQPPKwJmJgFQ7JjEwu0lHCZmEmM4hU9H28"/>
         </div>
-        <div class="col-9 col-sm-9 col-md-9">
+        <div class="col-8 col-sm-8 col-md-9">
             <h1>
                 Besart Sulejmani
             </h1>
             <h2>
                 DevOps, Infrastructure as Code, Platform Engineer, Team Lead
             </h2>
+            <!--
+            De contact info is in het publieke domein; met andere woorden, 
+            tenzij je iets extras doet kan dit gecrawled worden door google, 
+            en weet iedereen dus je email en telefoon nummer mocht je dit erbij zetten.
+            Ander nadeel is dat als het in google komt, spam bots je ook kunnen crawlen, 
+            hoeft niet maar kan wel. 
+            -->
             <p class="contact-title">
-                <a href="#">besart.sulejmani@gmail.com</a> | <a href="#">0612345678</a>
+                <a href="mailto:besart.sulejmani@gmail.com">email mij</a> | 
+                <a href="tel:+31612345678">bel mij</a> | 
+                <a href="https://www.linkedin.com/in/besart-sulejmani-0b92aa25/">linkedin</a>
             </p>
 
         </div>
@@ -247,6 +289,12 @@ article{
         <!-- opleiding item -->
         <div class="col-12 col-md-6">
             <div class="edu">
+                <!-- 
+                de images worden vanuit linkedin geladen, 
+                je kunt ze ook voor de zekerheid downloaden 
+                en dan in de map assets zetten en local link maken 
+                src="assets/img/image.jpg"
+                -->
                 <img class="opleiding-img" src="https://media.licdn.com/dms/image/v2/C4D0BAQFYEOygIXpNyA/company-logo_100_100/company-logo_100_100/0/1631370315695?e=1740009600&v=beta&t=vjDlwF965H6wLr9MuFcFZY60qBmjSdwXj2g_on_aNmo"/>
                 <div>
                     <h5>Gilde Opleidingen</h5>
@@ -288,8 +336,7 @@ article{
                         <img class="company" src="https://media.licdn.com/dms/image/v2/C4E0BAQFckzQztY5bpQ/company-logo_100_100/company-logo_100_100/0/1656423230208/rawworks_logo?e=1740009600&v=beta&t=SZ8Zq3VhdMKH77kkrHD9n2nvNOcOCNQ6dY1oON0njvw" />
                     </div>
                     <h4>Lead Platform Engineering</h4>
-                    <span>Full-time</span>
-                    <span>Apr 2024 - Present · 8 mos</span>
+                    <span>Apr 2024 - Present · 8 mos</span><br>
                     <span>Utrecht, Nederland</span>
                     <div class="work-description">
                         <p>Responsible for the leadership and strategic direction of the Platform Engineering team:</p>
@@ -373,7 +420,7 @@ article{
         </div>
     </div>
 
-    <a href="https://www.linkedin.com/in/besart-sulejmani-0b92aa25/">bekijk mijn linkedin pagina</a>
+    
   </main>
 </body>
 </html>
