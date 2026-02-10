@@ -8,19 +8,548 @@
 <meta name="keywords" content="Vincent Brand, Vincent, Brand, Senior, AI, Tech, Management">
 <meta name="author" content="Vincent Brand">
 
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --cyan: #00f0ff;
+    --violet: #8b5cf6;
+    --magenta: #e040fb;
+    --lime: #a3e635;
+    --dark: #06060e;
+    --dark2: #0c0c1a;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: var(--dark);
+    font-family: 'Inter', sans-serif;
+    color: #e0e0f0;
+  }
+
+  canvas#bg {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+  }
+
+  .overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .content {
+    padding: 6vh 8vw;
+    max-width: 720px;
+    pointer-events: auto;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 1s 0.3s forwards;
+  }
+
+  .tag::before {
+    content: '';
+    width: 24px; height: 1px;
+    background: var(--cyan);
+  }
+
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(2.8rem, 7vw, 5.5rem);
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    color: #fff;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 1s 0.5s forwards;
+  }
+
+  h1 .accent {
+    background: linear-gradient(135deg, var(--cyan), var(--violet), var(--magenta));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+    font-weight: 300;
+    line-height: 1.7;
+    color: rgba(220, 220, 240, 0.6);
+    max-width: 520px;
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: fadeUp 1s 0.7s forwards;
+  }
+
+  .pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: fadeUp 1s 0.9s forwards;
+  }
+
+  .pill {
+    padding: 8px 18px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(10px);
+    transition: all 0.4s ease;
+    cursor: default;
+    pointer-events: auto;
+  }
+
+  .pill:hover {
+    border-color: var(--cyan);
+    background: rgba(0, 240, 255, 0.06);
+    color: var(--cyan);
+    box-shadow: 0 0 20px rgba(0,240,255,0.08);
+    transform: translateY(-2px);
+  }
+
+  .pill.v { border-color: rgba(139,92,246,0.3); color: rgba(200,180,255,0.8); }
+  .pill.c { border-color: rgba(0,240,255,0.2); color: rgba(180,240,255,0.8); }
+  .pill.m { border-color: rgba(224,64,251,0.2); color: rgba(240,180,255,0.8); }
+  .pill.l { border-color: rgba(163,230,53,0.2); color: rgba(200,240,180,0.8); }
+
+  .cta-row {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    opacity: 0;
+    animation: fadeUp 1s 1.1s forwards;
+  }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 32px;
+    border-radius: 100px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    color: #06060e;
+    border: none;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    pointer-events: auto;
+  }
+
+  .cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,240,255,0.25);
+  }
+
+  .cta-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(220,220,240,0.5);
+    text-decoration: none;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: color 0.3s;
+  }
+
+  .cta-ghost:hover { color: var(--cyan); }
+
+  /* Bottom bar */
+  .bottom-bar {
+    position: fixed;
+    bottom: 0; left: 0;
+    width: 100%;
+    z-index: 2;
+    padding: 24px 8vw;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    pointer-events: none;
+    opacity: 0;
+    animation: fadeUp 1s 1.4s forwards;
+  }
+
+  .bottom-bar > * { pointer-events: auto; }
+
+  .socials {
+    display: flex;
+    gap: 20px;
+  }
+
+  .socials a {
+    font-size: 12px;
+    color: rgba(220,220,240,0.35);
+    text-decoration: none;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+
+  .socials a:hover { color: var(--cyan); }
+
+  .status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: rgba(220,220,240,0.35);
+  }
+
+  .status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--lime);
+    animation: pulse 2s infinite;
+  }
+
+  /* Corner vectors */
+  .vector-corner {
+    position: fixed;
+    z-index: 1;
+    opacity: 0.12;
+    pointer-events: none;
+  }
+
+  .vector-corner.tr {
+    top: 40px; right: 40px;
+    animation: fadeIn 1s 1.6s forwards;
+    opacity: 0;
+  }
+
+  .vector-corner.bl {
+    bottom: 80px; left: 40px;
+    animation: fadeIn 1s 1.8s forwards;
+    opacity: 0;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 0.12; }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .content { padding: 5vh 6vw; }
+    h1 { letter-spacing: -1px; }
+    .bottom-bar { padding: 20px 6vw; flex-direction: column; gap: 12px; }
+    .vector-corner { display: none; }
+  }
+</style>
 </head>
-  
 <body>
-  
-  <main>
+<canvas id="bg"></canvas>
 
-    <h1>Hello World...</h1>
-  
-  </main>
-  
+<!-- Vector corner decorations -->
+<svg class="vector-corner tr" width="120" height="120" viewBox="0 0 120 120" fill="none">
+  <path d="M2 2h40M2 2v40" stroke="#00f0ff" stroke-width="0.5"/>
+  <circle cx="2" cy="2" r="2" fill="#00f0ff"/>
+  <path d="M30 60L60 30L90 60L60 90Z" stroke="#8b5cf6" stroke-width="0.5"/>
+  <circle cx="60" cy="60" r="25" stroke="#00f0ff" stroke-width="0.3" stroke-dasharray="3 5"/>
+  <line x1="60" y1="35" x2="60" y2="85" stroke="#8b5cf6" stroke-width="0.3"/>
+  <line x1="35" y1="60" x2="85" y2="60" stroke="#8b5cf6" stroke-width="0.3"/>
+</svg>
+
+<svg class="vector-corner bl" width="100" height="100" viewBox="0 0 100 100" fill="none">
+  <polygon points="50,10 90,90 10,90" stroke="#e040fb" stroke-width="0.5" fill="none"/>
+  <circle cx="50" cy="55" r="20" stroke="#00f0ff" stroke-width="0.3" stroke-dasharray="2 4"/>
+  <circle cx="50" cy="55" r="8" stroke="#8b5cf6" stroke-width="0.5"/>
+</svg>
+
+<div class="overlay">
+  <div class="content">
+    <div class="tag">Innovative Technology Leader</div>
+    <h1>Vincent<br><span class="accent">Brand</span></h1>
+    <p class="subtitle">
+      Architecting intelligent systems at the intersection of AI, data infrastructure, and future-proof technology — building workflows that evolve.
+    </p>
+    <div class="pills">
+      <span class="pill c">Artificial Intelligence</span>
+      <span class="pill v">Data Architecture</span>
+      <span class="pill m">Agentic Systems</span>
+      <span class="pill l">Future-Proof Workflows</span>
+      <span class="pill c">Machine Learning</span>
+      <span class="pill v">Knowledge Graphs</span>
+    </div>
+    <div class="cta-row">
+      <a class="cta" href="#">Get in Touch <span>→</span></a>
+      <a class="cta-ghost" href="#">Explore Work ↓</a>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-bar">
+  <div class="socials">
+    <a href="#">LinkedIn</a>
+    <a href="#">GitHub</a>
+    <a href="#">X</a>
+  </div>
+  <div class="status">
+    <span class="status-dot"></span>
+    Available for projects
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('bg');
+const gl = canvas.getContext('webgl', { alpha: false, antialias: true });
+
+let W, H, mouse = { x: 0.5, y: 0.5 }, time = 0;
+
+function resize() {
+  W = canvas.width = window.innerWidth * devicePixelRatio;
+  H = canvas.height = window.innerHeight * devicePixelRatio;
+  canvas.style.width = window.innerWidth + 'px';
+  canvas.style.height = window.innerHeight + 'px';
+  gl.viewport(0, 0, W, H);
+}
+resize();
+window.addEventListener('resize', resize);
+
+window.addEventListener('mousemove', e => {
+  mouse.x = e.clientX / window.innerWidth;
+  mouse.y = e.clientY / window.innerHeight;
+});
+
+window.addEventListener('touchmove', e => {
+  mouse.x = e.touches[0].clientX / window.innerWidth;
+  mouse.y = e.touches[0].clientY / window.innerHeight;
+}, { passive: true });
+
+// Shaders
+const vertSrc = `
+attribute vec2 pos;
+void main() { gl_Position = vec4(pos, 0.0, 1.0); }
+`;
+
+const fragSrc = `
+precision highp float;
+uniform float u_time;
+uniform vec2 u_res;
+uniform vec2 u_mouse;
+
+#define PI 3.14159265
+
+// Simplex-ish noise
+vec3 mod289(vec3 x) { return x - floor(x * (1.0/289.0)) * 289.0; }
+vec2 mod289(vec2 x) { return x - floor(x * (1.0/289.0)) * 289.0; }
+vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
+
+float snoise(vec2 v) {
+  const vec4 C = vec4(0.211324865405187, 0.366025403784439,
+                      -0.577350269189626, 0.024390243902439);
+  vec2 i = floor(v + dot(v, C.yy));
+  vec2 x0 = v - i + dot(i, C.xx);
+  vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+  vec4 x12 = x0.xyxy + C.xxzz;
+  x12.xy -= i1;
+  i = mod289(i);
+  vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0)) + i.x + vec3(0.0, i1.x, 1.0));
+  vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
+  m = m*m; m = m*m;
+  vec3 x = 2.0 * fract(p * C.www) - 1.0;
+  vec3 h = abs(x) - 0.5;
+  vec3 ox = floor(x + 0.5);
+  vec3 a0 = x - ox;
+  m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
+  vec3 g;
+  g.x = a0.x * x0.x + h.x * x0.y;
+  g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+  return 130.0 * dot(m, g);
+}
+
+float fbm(vec2 p) {
+  float f = 0.0;
+  f += 0.5 * snoise(p); p *= 2.01;
+  f += 0.25 * snoise(p); p *= 2.02;
+  f += 0.125 * snoise(p); p *= 2.03;
+  f += 0.0625 * snoise(p);
+  return f;
+}
+
+void main() {
+  vec2 uv = gl_FragCoord.xy / u_res;
+  vec2 p = (gl_FragCoord.xy - 0.5 * u_res) / u_res.y;
+  float t = u_time * 0.15;
+
+  // Mouse influence
+  vec2 mp = u_mouse - 0.5;
+  mp.y = -mp.y;
+
+  // Organic flow field
+  vec2 q = vec2(fbm(p + t * 0.3), fbm(p + vec2(1.7, 9.2) + t * 0.2));
+  vec2 r = vec2(fbm(p + q * 1.2 + vec2(1.2, 3.4) + t * 0.25),
+                fbm(p + q * 1.5 + vec2(8.3, 2.8) + t * 0.18));
+
+  float f = fbm(p + r * 1.8 + mp * 0.3);
+
+  // Color palette
+  vec3 cyan = vec3(0.0, 0.94, 1.0);
+  vec3 violet = vec3(0.545, 0.361, 0.965);
+  vec3 magenta = vec3(0.878, 0.251, 0.984);
+  vec3 dark = vec3(0.024, 0.024, 0.055);
+
+  // Build color
+  vec3 col = dark;
+
+  // Large organic aurora
+  float aurora = smoothstep(-0.2, 0.8, f) * 0.12;
+  vec3 auroraCol = mix(violet, cyan, sin(f * 3.0 + t) * 0.5 + 0.5);
+  auroraCol = mix(auroraCol, magenta, cos(f * 2.0 - t * 1.3) * 0.5 + 0.5);
+  col += auroraCol * aurora;
+
+  // Flowing bands
+  float band1 = sin(p.y * 6.0 + f * 4.0 + t * 2.0) * 0.5 + 0.5;
+  band1 = pow(band1, 8.0) * 0.06;
+  col += cyan * band1;
+
+  float band2 = sin(p.x * 5.0 - f * 3.0 + t * 1.5) * 0.5 + 0.5;
+  band2 = pow(band2, 10.0) * 0.04;
+  col += violet * band2;
+
+  // Central orb (offset to right side)
+  vec2 orbCenter = vec2(0.35 + mp.x * 0.05, mp.y * 0.05);
+  float d = length(p - orbCenter);
+  float orbGlow = exp(-d * 3.0) * 0.15;
+  vec3 orbCol = mix(cyan, violet, sin(t * 0.8) * 0.5 + 0.5);
+  col += orbCol * orbGlow;
+
+  // Orbiting rings
+  float ring1 = abs(d - 0.25 - sin(t * 0.5) * 0.03);
+  ring1 = smoothstep(0.003, 0.0, ring1 - 0.001) * 0.08;
+  col += cyan * ring1 * (sin(atan(p.y - orbCenter.y, p.x - orbCenter.x) * 3.0 + t * 2.0) * 0.5 + 0.5);
+
+  float ring2 = abs(d - 0.38 - cos(t * 0.4) * 0.04);
+  ring2 = smoothstep(0.004, 0.0, ring2 - 0.001) * 0.05;
+  col += violet * ring2 * (cos(atan(p.y - orbCenter.y, p.x - orbCenter.x) * 5.0 - t * 1.5) * 0.5 + 0.5);
+
+  // Particle-like dots from noise
+  float dots = snoise(p * 40.0 + t * 0.5);
+  dots = smoothstep(0.85, 0.95, dots) * 0.3;
+  col += cyan * dots * smoothstep(0.6, 0.2, d);
+
+  float dots2 = snoise(p * 30.0 - t * 0.3 + 100.0);
+  dots2 = smoothstep(0.87, 0.95, dots2) * 0.2;
+  col += magenta * dots2;
+
+  // Grid lines (very subtle)
+  float grid = 0.0;
+  vec2 gp = p * 15.0;
+  grid += smoothstep(0.06, 0.0, abs(fract(gp.x) - 0.5) - 0.48) * 0.015;
+  grid += smoothstep(0.06, 0.0, abs(fract(gp.y) - 0.5) - 0.48) * 0.015;
+  col += vec3(0.3, 0.4, 0.6) * grid * smoothstep(0.0, 0.5, d) * 0.5;
+
+  // Data stream lines (vertical)
+  for(float i = 0.0; i < 5.0; i++) {
+    float xPos = sin(i * 2.3 + t * 0.3) * 0.6;
+    float stream = smoothstep(0.003, 0.0, abs(p.x - xPos));
+    float streamY = fract(p.y * 3.0 + t * (0.5 + i * 0.1) + i * 1.7);
+    stream *= streamY * smoothstep(1.0, 0.3, streamY);
+    col += mix(cyan, violet, i / 5.0) * stream * 0.03;
+  }
+
+  // Vignette
+  float vig = 1.0 - dot(uv - 0.5, uv - 0.5) * 1.5;
+  col *= vig;
+
+  // Slight left-side fade for text readability
+  float textFade = smoothstep(0.0, 0.45, uv.x);
+  col *= mix(0.3, 1.0, textFade);
+
+  // Tone mapping
+  col = col / (col + 0.8);
+  col = pow(col, vec3(0.95));
+
+  gl_FragColor = vec4(col, 1.0);
+}
+`;
+
+function createShader(type, src) {
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src);
+  gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+    console.error(gl.getShaderInfoLog(s));
+  }
+  return s;
+}
+
+const prog = gl.createProgram();
+gl.attachShader(prog, createShader(gl.VERTEX_SHADER, vertSrc));
+gl.attachShader(prog, createShader(gl.FRAGMENT_SHADER, fragSrc));
+gl.linkProgram(prog);
+gl.useProgram(prog);
+
+const buf = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+const posLoc = gl.getAttribLocation(prog, 'pos');
+gl.enableVertexAttribArray(posLoc);
+gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+
+const uTime = gl.getUniformLocation(prog, 'u_time');
+const uRes = gl.getUniformLocation(prog, 'u_res');
+const uMouse = gl.getUniformLocation(prog, 'u_mouse');
+
+let smoothMouse = { x: 0.5, y: 0.5 };
+
+function frame(ts) {
+  time = ts * 0.001;
+
+  // Smooth mouse lerp for organic feel
+  smoothMouse.x += (mouse.x - smoothMouse.x) * 0.03;
+  smoothMouse.y += (mouse.y - smoothMouse.y) * 0.03;
+
+  gl.uniform1f(uTime, time);
+  gl.uniform2f(uRes, W, H);
+  gl.uniform2f(uMouse, smoothMouse.x, smoothMouse.y);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
 </body>
-  
 </html>
-
 
